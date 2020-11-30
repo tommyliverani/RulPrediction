@@ -37,6 +37,22 @@ def compute_rul(data):
 		last_node=data['node'][index]
 	return data
 
+def max_rul(data):
+	max=data['rul'][0]
+	for index,row in data.iterrows():
+		if data['rul'][index]>max:
+			max=data['rul'][index]
+	return max
+
+def normalize_rul(data):
+    max=max_rul(data)*1.0
+    data['rul']=data['rul']*1.0
+    for index,row in data.iterrows():
+        data['rul'][index]=data['rul'][index]*1.0/max
+    return data
+
+
+
 
 def compute_final_rul_data(path):
 	full_data = pd.read_csv(path+'/final_data_full.csv')
@@ -46,9 +62,26 @@ def compute_final_rul_data(path):
 
 	
 
-
-
+def split_data(data,ratio):
+	np.random.seed(42)	
+	nodes = data.node.unique()
+	np.random.shuffle(nodes)
+	sep = int(ratio * len(nodes))
+	tr_nodes = set(nodes[:sep])
+	tr_list, ts_list = [], []
+	for node, gdata in data.groupby('node'):
+        	if node in tr_nodes:
+        		tr_list.append(gdata)
+       		else:
+        		ts_list.append(gdata)
+	tr_data = pd.concat(tr_list)
+	ts_data = pd.concat(ts_list)
+	return tr_data, ts_data
+	
+	
 		
+	
+	
 
 
 
